@@ -12,12 +12,16 @@ import {
 import { Player } from "./actors/player/player";
 import { getWebSocketService } from "./services/websocket";
 
-export class MyLevel extends Scene {
+export class MainLevel extends Scene {
   override onInitialize(engine: Engine): void {
     const wsService = getWebSocketService("ws://localhost:8080/ws");
 
     wsService.on("connected", (payload) => {
       console.log("Connected to server", payload);
+    });
+
+    wsService.on("podList", (payload) => {
+      console.log("Pod list", payload);
     });
 
     if (!wsService.isConnectedToServer()) {
