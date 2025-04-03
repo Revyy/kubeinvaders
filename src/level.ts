@@ -10,9 +10,22 @@ import {
   vec,
 } from "excalibur";
 import { Player } from "./actors/player/player";
+import { getWebSocketService } from "./services/websocket";
 
 export class MyLevel extends Scene {
   override onInitialize(engine: Engine): void {
+    const wsService = getWebSocketService("ws://localhost:8080/ws");
+
+    wsService.on("connected", (payload) => {
+      console.log("Connected to server", payload);
+    });
+
+    if (!wsService.isConnectedToServer()) {
+      wsService.connect().then(() => {
+        wsService.send("test", { test: "test" });
+      });
+    }
+
     // Scene.onInitialize is where we recommend you perform the composition for your game
     const player = new Player();
     this.add(player); // Actors need to be added to a scene to be drawn
