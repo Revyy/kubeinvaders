@@ -13,7 +13,10 @@ func main() {
 	flag.Parse()
 
 	// Create a new WebSocket server
-	wsServer := server.NewWebSocketServer()
+	wsServer, err := server.NewWebSocketServer()
+	if err != nil {
+		log.Fatalf("Failed to create WebSocket server: %v", err)
+	}
 
 	// Set up HTTP server for WebSocket connections
 	http.HandleFunc("/ws", wsServer.HandleConnection)
