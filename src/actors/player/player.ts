@@ -27,14 +27,14 @@ export class Player extends Actor {
   // These values now represent units per second rather than per frame
   private acelleration = 300; // pixels per second^2
   private maxSpeed = 250; // pixels per second
-  private rotationSpeed = 100; // radians per second
+  private rotationSpeed = 400; // radians per second
 
   constructor() {
     super({
       name: "Player",
       pos: vec(1500, 1500),
       anchor: vec(0.5, 0.5),
-      collider: Shape.Polygon([vec(0, -24), vec(24, 24), vec(-24, 24)]),
+      collider: Shape.Polygon([vec(0, -18), vec(20, 14), vec(-20, 14)]),
       collisionType: CollisionType.Active,
     });
   }

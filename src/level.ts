@@ -17,6 +17,7 @@ export class MyLevel extends Scene {
     const player = new Player();
     this.add(player); // Actors need to be added to a scene to be drawn
     this.camera.strategy.lockToActor(player);
+    this.camera.zoom = 0.8;
 
     // Left wall
     this.add(
