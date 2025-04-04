@@ -14,38 +14,58 @@ const engineRunning = animation(
   50
 );
 
+const autoCannonIdle = animation(
+  spriteSheet(Resources.ShipAutoCannon, 7, 1, 48, 48),
+  [0],
+  50
+);
+
+const autoCannonFiring = animation(
+  spriteSheet(Resources.ShipAutoCannon, 4, 1, 48, 48),
+  [0, 1, 2, 3, 4, 5, 6],
+  50
+);
+
+export const autoCannonBullet = animation(
+  spriteSheet(Resources.ShipAutoCannonBullet, 4, 1, 32, 32),
+  [0, 1, 2, 3],
+  50
+);
+
 const shipGroup = new GraphicsGroup({
-  useAnchor: false, // position group from the top left
+  useAnchor: true,
   members: [
-    {
-      graphic: Resources.ShipFullHealth.toSprite(),
-      offset: vec(-24, -24),
-    },
-    {
-      graphic: Resources.EngineSuperCharged.toSprite(),
-      offset: vec(-24, -24),
-    },
+    Resources.ShipFullHealth.toSprite(),
+    Resources.EngineSuperCharged.toSprite(),
+    autoCannonIdle,
+  ],
+});
+
+const firingShipGroup = new GraphicsGroup({
+  useAnchor: true,
+  members: [
+    Resources.ShipFullHealth.toSprite(),
+    Resources.EngineSuperCharged.toSprite(),
+    autoCannonFiring,
   ],
 });
 
 export const idleShipGroup = new GraphicsGroup({
-  useAnchor: false, // position group from the top left
-  members: [
-    shipGroup,
-    {
-      graphic: engineIdle,
-      offset: vec(-24, -24),
-    },
-  ],
+  useAnchor: true,
+  members: [shipGroup, engineIdle],
+});
+
+export const idleFiringShipGroup = new GraphicsGroup({
+  useAnchor: true,
+  members: [firingShipGroup, engineIdle],
 });
 
 export const runningShipGroup = new GraphicsGroup({
-  useAnchor: false, // position group from the top left
-  members: [
-    shipGroup,
-    {
-      graphic: engineRunning,
-      offset: vec(-24, -24),
-    },
-  ],
+  useAnchor: true,
+  members: [shipGroup, engineRunning],
+});
+
+export const runningFiringShipGroup = new GraphicsGroup({
+  useAnchor: true,
+  members: [firingShipGroup, engineRunning],
 });

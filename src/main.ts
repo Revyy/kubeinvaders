@@ -1,4 +1,10 @@
-import { Color, DisplayMode, Engine, FadeInOut } from "excalibur";
+import {
+  Color,
+  DisplayMode,
+  Engine,
+  FadeInOut,
+  SolverStrategy,
+} from "excalibur";
 import { loader } from "./resources";
 import { MainLevel } from "./level";
 
@@ -6,17 +12,17 @@ import { MainLevel } from "./level";
 
 const game = new Engine({
   width: 800, // Logical width and height in game pixels
-  height: 600,
+  height: 800,
   displayMode: DisplayMode.FitScreenAndFill, // Display mode tells excalibur how to fill the window
   pixelArt: true, // pixelArt will turn on the correct settings to render pixel art without jaggies or shimmering artifacts
   scenes: {
     start: MainLevel,
   },
   backgroundColor: Color.Black, // Background color of the canvas
-  // physics: {
-  //   solver: SolverStrategy.Realistic,
-  //   substep: 5 // Sub step the physics simulation for more robust simulations
-  // },
+  physics: {
+    solver: SolverStrategy.Realistic,
+    substep: 5, // Sub step the physics simulation for more robust simulations
+  },
   // fixedUpdateTimestep: 16 // Turn on fixed update timestep when consistent physic simulation is important
 });
 

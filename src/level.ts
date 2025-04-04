@@ -9,32 +9,35 @@ import {
   SceneActivationContext,
   vec,
 } from "excalibur";
-import { Player } from "./actors/player/player";
+import { Player } from "./actors/player";
 import { getWebSocketService } from "./services/websocket";
+import { Pod } from "./actors/pod";
 
 export class MainLevel extends Scene {
   override onInitialize(engine: Engine): void {
-    const wsService = getWebSocketService("ws://localhost:8080/ws");
+    // const wsService = getWebSocketService("ws://localhost:8080/ws");
 
-    wsService.on("connected", (payload) => {
-      console.log("Connected to server", payload);
-    });
+    // wsService.on("connected", (payload) => {
+    //   console.log("Connected to server", payload);
+    // });
 
-    wsService.on("podList", (payload) => {
-      console.log("Pod list", payload);
-    });
+    // wsService.on("podList", (payload) => {
+    //   console.log("Pod list", payload);
+    // });
 
-    if (!wsService.isConnectedToServer()) {
-      wsService.connect().then(() => {
-        wsService.send("test", { test: "test" });
-      });
-    }
+    // if (!wsService.isConnectedToServer()) {
+    //   wsService.connect().then(() => {
+    //     wsService.send("test", { test: "test" });
+    //   });
+    // }
 
     // Scene.onInitialize is where we recommend you perform the composition for your game
-    const player = new Player();
+    const player = new Player(vec(500, 500));
     this.add(player); // Actors need to be added to a scene to be drawn
-    this.camera.strategy.lockToActor(player);
-    this.camera.zoom = 0.8;
+    this.camera.zoom = 1;
+
+    const pod = new Pod(vec(450, 450));
+    this.add(pod); // Actors need to be added to a scene to be drawn
 
     // Left wall
     this.add(
@@ -42,7 +45,7 @@ export class MainLevel extends Scene {
         pos: vec(0, 0),
         collider: new EdgeCollider({
           begin: vec(0, 0),
-          end: vec(0, 3000),
+          end: vec(0, 800),
         }),
         collisionType: CollisionType.Fixed,
       })
@@ -51,10 +54,10 @@ export class MainLevel extends Scene {
     // Top wall
     this.add(
       new Actor({
-        pos: vec(0, 3000),
+        pos: vec(0, 800),
         collider: new EdgeCollider({
           begin: vec(0, 0),
-          end: vec(3000, 0),
+          end: vec(800, 0),
         }),
         collisionType: CollisionType.Fixed,
       })
@@ -63,10 +66,10 @@ export class MainLevel extends Scene {
     // Right wall
     this.add(
       new Actor({
-        pos: vec(3000, 0),
+        pos: vec(800, 0),
         collider: new EdgeCollider({
           begin: vec(0, 0),
-          end: vec(0, 3000),
+          end: vec(0, 800),
         }),
         collisionType: CollisionType.Fixed,
       })
@@ -78,7 +81,7 @@ export class MainLevel extends Scene {
         pos: vec(0, 0),
         collider: new EdgeCollider({
           begin: vec(0, 0),
-          end: vec(3000, 0),
+          end: vec(750, 0),
         }),
         collisionType: CollisionType.Fixed,
       })
