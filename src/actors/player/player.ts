@@ -8,19 +8,29 @@ import {
   Shape,
   Side,
   vec,
+  Vector,
 } from "excalibur";
 
-import { idleShipGroup, runningShipGroup } from "./animations";
+import {
+  idleFiringShipGroup,
+  idleShipGroup,
+  runningFiringShipGroup,
+  runningShipGroup,
+} from "./animations";
+import { AutoCannonBullet } from "./AutoCannonBullet";
 
 type EngineState = "Idle" | "Breaking" | "Increasing";
+type WeaponState = "Idle" | "Firing";
 type PlayerState = {
   engine: EngineState;
+  weapon: WeaponState;
   rotation: number;
 };
 
 export class Player extends Actor {
   private state: PlayerState = {
     engine: "Idle",
+    weapon: "Idle",
     rotation: 0,
   };
 
@@ -29,10 +39,16 @@ export class Player extends Actor {
   private maxSpeed = 250; // pixels per second
   private rotationSpeed = 400; // radians per second
 
-  constructor() {
+  // Weapon properties
+  private firingRateMs = 200; // Time between shots in milliseconds
+  private firingCooldown = 0; // Current cooldown timer
+  private bulletSpeed = 300; // Bullet speed in pixels per second
+  private bulletMaxDistance = 1000; // Maximum bullet travel distance in pixels
+
+  constructor(pos: Vector) {
     super({
       name: "Player",
-      pos: vec(1500, 1500),
+      pos,
       anchor: vec(0.5, 0.5),
       collider: Shape.Polygon([vec(0, -18), vec(20, 14), vec(-20, 14)]),
       collisionType: CollisionType.Active,
@@ -51,6 +67,7 @@ export class Player extends Actor {
     // Put any update logic here runs every frame after Actor builtins
     this.onPostUpdateState(engine);
     this.onPostUpdateMovement(elapsedMs);
+    this.onPostUpdateWeapon(engine, elapsedMs);
     this.onPostUpdateGraphics();
   }
 
@@ -69,6 +86,12 @@ export class Player extends Actor {
       this.state.engine = "Breaking";
     } else {
       this.state.engine = "Idle";
+    }
+
+    if (this.spaceKeyPressed(engine)) {
+      this.state.weapon = "Firing";
+    } else {
+      this.state.weapon = "Idle";
     }
   }
 
@@ -124,11 +147,60 @@ export class Player extends Actor {
     }
   }
 
+  onPostUpdateWeapon(engine: Engine, elapsedMs: number): void {
+    // Update firing cooldown
+    if (this.firingCooldown > 0) {
+      this.firingCooldown -= elapsedMs;
+    }
+
+    // If player is firing and cooldown is done, fire a bullet
+    if (this.state.weapon === "Firing" && this.firingCooldown <= 0) {
+      this.fireBullet(engine);
+      this.firingCooldown = this.firingRateMs; // Reset cooldown
+    }
+  }
+
+  fireBullet(engine: Engine): void {
+    // Calculate bullet spawn position (slightly in front of the ship)
+    const bulletOffset = vec(
+      Math.sin(this.rotation) * 35,
+      -Math.cos(this.rotation) * 35
+    );
+    const bulletPos = this.pos.add(bulletOffset);
+
+    // Create direction vector based on ship rotation
+    const bulletDirection = vec(
+      Math.sin(this.rotation),
+      -Math.cos(this.rotation)
+    ).normalize();
+
+    // Create the bullet
+    const bullet = new AutoCannonBullet(
+      bulletPos,
+      bulletDirection,
+      this.bulletSpeed,
+      this.bulletMaxDistance
+    );
+    console.log("adding bullet");
+    // Add the bullet to the scene
+    engine.currentScene.add(bullet);
+  }
+
   onPostUpdateGraphics(): void {
-    if (this.state.engine == "Idle") {
+    if (this.state.engine == "Idle" && this.state.weapon == "Idle") {
       this.graphics.use(idleShipGroup);
-    } else if (this.state.engine == "Increasing") {
+    } else if (this.state.engine == "Idle" && this.state.weapon == "Firing") {
+      this.graphics.use(idleFiringShipGroup);
+    } else if (
+      this.state.engine == "Increasing" &&
+      this.state.weapon == "Idle"
+    ) {
       this.graphics.use(runningShipGroup);
+    } else if (
+      this.state.engine == "Increasing" &&
+      this.state.weapon == "Firing"
+    ) {
+      this.graphics.use(runningFiringShipGroup);
     }
   }
 
@@ -157,6 +229,13 @@ export class Player extends Actor {
     return (
       engine.input.keyboard.wasPressed(Keys.Down) ||
       engine.input.keyboard.isHeld(Keys.Down)
+    );
+  }
+
+  spaceKeyPressed(engine: Engine): boolean {
+    return (
+      engine.input.keyboard.wasPressed(Keys.Space) ||
+      engine.input.keyboard.isHeld(Keys.Space)
     );
   }
 

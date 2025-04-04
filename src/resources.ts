@@ -13,6 +13,21 @@ export const Resources = {
   EngineSuperChargedSprites: new ImageSource(
     "./images/ship/engine-supercharged-effect-sprites.png"
   ),
+
+  ShipAutoCannon: new ImageSource("./images/ship/ship-auto-cannon.png"),
+  ShipAutoCannonBullet: new ImageSource(
+    "./images/ship/ship-auto-cannon-bullet.png"
+  ),
+
+  EnemyBomberFullHealth: new ImageSource(
+    "./images/enemies/enemy-bomber-full-health.png"
+  ),
+  EnemyBomberDestruction: new ImageSource(
+    "./images/enemies/enemy-bomber-destruction.png"
+  ),
+  EnemyBomberEngine: new ImageSource(
+    "./images/enemies/enemy-bomber-engine.png"
+  ),
 } as const; // the 'as const' is a neat typescript trick to get strong typing on your resources.
 // So when you type Resources.Sword -> ImageSource
 
